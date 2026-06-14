@@ -8,7 +8,7 @@ export const visitSchema = z.object({
 
 export const vitalSchema = z.object({
   blood_pressure: z.string().optional(),
-  heart_rate: z.int32().optional(),
+  heart_rate: z.number().int().optional(),
   temperature: z.number().optional(),
   weight: z.number().optional(),
   height: z.number().optional(),
