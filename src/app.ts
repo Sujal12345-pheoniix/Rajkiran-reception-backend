@@ -14,6 +14,9 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 
+// Enable trust proxy for Render load balancers/reverse proxies to let rate limiters read client IPs
+app.set("trust proxy", 1);
+
 // ─── CORS — FIXED: was origin:"*" with credentials:true (invalid) ─────────
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "http://localhost:3000")
   .split(",")
