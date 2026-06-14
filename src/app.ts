@@ -18,7 +18,7 @@ app.use(helmet({
 app.set("trust proxy", 1);
 
 // ─── CORS — FIXED: was origin:"*" with credentials:true (invalid) ─────────
-const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "http://localhost:3000")
+const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "http://localhost:3000,https://rajkiran-reception-frontend.vercel.app")
   .split(",")
   .map((o) => o.trim());
 
