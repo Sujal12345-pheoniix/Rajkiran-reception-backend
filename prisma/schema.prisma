@@ -86,6 +86,9 @@ model Patient {
   email            String?  @db.VarChar(100)
   address          String?  @db.VarChar(255)
   alternate_mobile String?  @db.VarChar(15)
+  blood_group      String?  @db.VarChar(10)
+  emergency_contact String? @db.VarChar(100)
+  insurance_details String? @db.VarChar(255)
   created_at       DateTime @default(now()) @db.Timestamp
   updated_at       DateTime @updatedAt @db.Timestamp
   created_by       String   @db.Uuid
@@ -117,6 +120,11 @@ model Visit {
   created_by       String   @db.Uuid
   created_at       DateTime @default(now()) @db.Timestamp
 
+  symptoms         String[] @default([])
+  known_diseases   String[] @default([])
+  chief_complaint  String?  @db.Text
+  visit_notes      String?  @db.Text
+
   patient         Patient @relation(fields: [patient_id], references: [patient_id])
   doctor          Doctor? @relation(fields: [doctor_id], references: [doctor_id])
   created_by_user User    @relation(fields: [created_by], references: [user_id])
@@ -143,6 +151,10 @@ model Vital {
   height         Decimal? @db.Decimal(5, 2)
   bmi            Decimal? @db.Decimal(5, 2)
   bmr            Decimal? @db.Decimal(5, 2)
+  oxygen_saturation Int?
+  respiratory_rate  Int?
+  blood_sugar       Int?
+  pain_scale        Int?
   recorded_at    DateTime @default(now()) @db.Timestamp
   visits         Visit[]
 
@@ -200,6 +212,12 @@ model Bill {
   consultation_fee Decimal  @db.Decimal(10, 2)
   extra_charges    Decimal  @default(0) @db.Decimal(10, 2)
   total_amount     Decimal  @default(0) @db.Decimal(10, 2)
+  registration_fee Decimal  @default(0) @db.Decimal(10, 2)
+  tests_fee        Decimal  @default(0) @db.Decimal(10, 2)
+  medicines_fee    Decimal  @default(0) @db.Decimal(10, 2)
+  tax              Decimal  @default(0) @db.Decimal(10, 2)
+  discount         Decimal  @default(0) @db.Decimal(10, 2)
+  grand_total      Decimal  @default(0) @db.Decimal(10, 2)
   payment_status   String   @default("pending") @db.VarChar(20) // paid, pending, partial
   payment_method   String?  @db.VarChar(20) // cash, card, insurance
   bill_date        DateTime @default(now()) @db.Timestamp

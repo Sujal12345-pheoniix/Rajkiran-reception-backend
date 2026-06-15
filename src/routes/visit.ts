@@ -6,18 +6,18 @@ import { validate } from "../middleware/validate.js";
 import { authenticate, authorize } from "../middleware/auth.js";
 import { HttpError } from "../middleware/errorHandler.js";
 import { createVisitSchema, type CreateVisitSchema } from "../schemas/visit.js";
-import { calculateAge, calculateBmi, calculateBmr } from "../lib/util.js";
+import { calculateAge, calculateBmi } from "../lib/util.js";
 
 const router = Router();
 
 router.use(authenticate);
 
-// ─── POST /api/visit — Create new visit (receptionist only) ──────────────────
+// ─── POST /api/visit — Create new visit ──────────────────
 router.post(
   "/",
   authorize("receptionist", "admin"),
   validate(createVisitSchema),
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const visitData = req.validated as CreateVisitSchema;
 
     const patient = await prisma.patient.findFirst({
@@ -25,24 +25,35 @@ router.post(
     });
     if (!patient) throw new HttpError(404, "Patient not found");
 
-    const doctor = await prisma.doctor.findUnique({
-      where: { doctor_id: visitData.visit.doctorId },
-    });
-    if (!doctor) throw new HttpError(404, "Doctor not found");
-    if (doctor.status !== "active") throw new HttpError(400, "Doctor is not currently active");
+    let doctor_id: string | null = null;
+    let consultationFee = 0;
+    if (visitData.visit.doctorId) {
+      const doctor = await prisma.doctor.findUnique({
+        where: { doctor_id: visitData.visit.doctorId },
+      });
+      if (!doctor) throw new HttpError(404, "Doctor not found");
+      if (doctor.status !== "active") throw new HttpError(400, "Doctor is not currently active");
+      doctor_id = doctor.doctor_id;
+      consultationFee = Number(doctor.consultation_fee);
+    }
 
     const patientAge = calculateAge(patient.dob);
     let bmi: number | undefined;
-    let bmr: number | undefined;
 
     if (visitData.vital.weight && visitData.vital.height) {
-      bmi = calculateBmi(visitData.vital.weight, visitData.vital.height);
+      bmi = calculateBmi(Number(visitData.vital.weight), Number(visitData.vital.height));
     }
 
-    // BUG FIX: total_amount was always just consultation_fee, ignoring extra_charges
+    const registrationFee = visitData.bill.registration_fee ?? 0;
+    const testsFee = visitData.bill.tests_fee ?? 0;
+    const medicinesFee = visitData.bill.medicines_fee ?? 0;
     const extraCharges = visitData.bill.extra_charge ?? 0;
-    const consultationFee = Number(doctor.consultation_fee);
-    const totalAmount = consultationFee + extraCharges;
+    const discount = visitData.bill.discount ?? 0;
+    const tax = visitData.bill.tax ?? 0;
+
+    // Grand total formula
+    const subtotal = consultationFee + registrationFee + testsFee + medicinesFee + extraCharges;
+    const grandTotal = subtotal + tax - discount;
 
     // Use Prisma transaction for atomicity
     const result = await prisma.$transaction(async (tx) => {
@@ -55,7 +66,10 @@ router.post(
           height: visitData.vital.height,
           age: patientAge,
           bmi: bmi,
-          bmr: bmr,
+          oxygen_saturation: visitData.vital.oxygen_saturation,
+          respiratory_rate: visitData.vital.respiratory_rate,
+          blood_sugar: visitData.vital.blood_sugar,
+          pain_scale: visitData.vital.pain_scale,
         },
       });
 
@@ -63,7 +77,13 @@ router.post(
         data: {
           consultation_fee: consultationFee,
           extra_charges: extraCharges,
-          total_amount: totalAmount, // BUG FIX: now correctly includes extra charges
+          total_amount: grandTotal,
+          registration_fee: registrationFee,
+          tests_fee: testsFee,
+          medicines_fee: medicinesFee,
+          tax: tax,
+          discount: discount,
+          grand_total: grandTotal,
           payment_status: visitData.bill.payment_status ?? "pending",
           payment_method: visitData.bill.payment_method ?? "cash",
           created_by: req.user!.sub,
@@ -75,14 +95,29 @@ router.post(
           vital_id: vital.vital_id,
           bill_id: bill.bill_id,
           patient_id: patient.patient_id,
-          doctor_id: doctor.doctor_id,
+          doctor_id: doctor_id,
           visit_type: visitData.visit.visit_type ?? "OPD",
+          symptoms: visitData.visit.symptoms ?? [],
+          known_diseases: visitData.visit.known_diseases ?? [],
+          chief_complaint: visitData.visit.chief_complaint,
+          visit_notes: visitData.visit.visit_notes,
           created_by: req.user!.sub,
           consultation_fee: consultationFee,
         },
         include: {
           patient: { select: { first_name: true, last_name: true, unique_id: true } },
           doctor: { select: { first_name: true, last_name: true } },
+        },
+      });
+
+      // Audit Log
+      await tx.adminLog.create({
+        data: {
+          admin_id: req.user!.sub,
+          action_type: "CREATE",
+          target_type: "VISIT",
+          target_id: visit.visit_id,
+          details: `Registered visit of type ${visit.visit_type} for Patient ID ${patient.unique_id}`,
         },
       });
 
@@ -96,7 +131,7 @@ router.post(
         visit_id: result.visit.visit_id,
         patient: result.visit.patient,
         doctor: result.visit.doctor,
-        total_amount: totalAmount,
+        total_amount: grandTotal,
         payment_status: result.bill.payment_status,
       },
     });
@@ -104,20 +139,18 @@ router.post(
 );
 
 // ─── GET /api/visit — Get visits with pagination ─────────────────────────────
-// BUG FIX: Was returning ALL visits with no pagination — catastrophic at scale
 router.get(
   "/",
   authorize("receptionist", "admin"),
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
     const skip = (page - 1) * limit;
 
-    // Optional filters
     const dateFilter = req.query.date as string;
     const doctorId = req.query.doctor_id as string;
 
-    const whereClause: Record<string, unknown> = {};
+    const whereClause: Record<string, any> = {};
     if (dateFilter) {
       const start = new Date(dateFilter);
       start.setHours(0, 0, 0, 0);
@@ -142,26 +175,8 @@ router.get(
           doctor: {
             select: { first_name: true, last_name: true, specialization: true },
           },
-          vitals: {
-            select: {
-              blood_pressure: true,
-              heart_rate: true,
-              temperature: true,
-              weight: true,
-              height: true,
-              bmi: true,
-              age: true,
-            },
-          },
-          bill: {
-            select: {
-              total_amount: true,
-              payment_status: true,
-              payment_method: true,
-              consultation_fee: true,
-              extra_charges: true,
-            },
-          },
+          vitals: true,
+          bill: true,
         },
       }),
       prisma.visit.count({ where: whereClause }),
@@ -184,7 +199,7 @@ router.get(
 router.get(
   "/:id",
   authorize("receptionist", "admin"),
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const id = req.params.id as string;
 
     const visit = await prisma.visit.findUnique({

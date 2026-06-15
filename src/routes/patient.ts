@@ -13,7 +13,6 @@ const router = Router();
 router.use(authenticate);
 
 // ─── POST /api/patient — Create a new patient ─────────────────────────────────
-// BUG FIX: Added validate(createPatientSchema) — was missing before
 router.post(
   "/",
   authorize("receptionist", "admin"),
@@ -44,8 +43,22 @@ router.post(
         ...patientData,
         email: patientData.email || null,
         alternate_mobile: patientData.alternate_mobile || null,
+        blood_group: patientData.blood_group || null,
+        emergency_contact: patientData.emergency_contact || null,
+        insurance_details: patientData.insurance_details || null,
         unique_id,
         created_by: req.user!.sub, // From authenticated token, not body
+      },
+    });
+
+    // Create Audit Log
+    await prisma.adminLog.create({
+      data: {
+        admin_id: req.user!.sub,
+        action_type: "CREATE",
+        target_type: "PATIENT",
+        target_id: newPatient.patient_id,
+        details: `Registered new patient: ${newPatient.first_name} ${newPatient.last_name} (${newPatient.unique_id})`,
       },
     });
 
@@ -58,7 +71,6 @@ router.post(
 );
 
 // ─── GET /api/patient — List patients with pagination ─────────────────────────
-// BUG FIX: Was using page as raw offset. Fixed to (page-1)*limit pattern.
 router.get(
   "/",
   authorize("receptionist", "admin"),
@@ -72,18 +84,13 @@ router.get(
         skip,
         take: limit,
         orderBy: { created_at: "desc" },
-        select: {
-          patient_id: true,
-          unique_id: true,
-          first_name: true,
-          last_name: true,
-          dob: true,
-          gender: true,
-          mobile: true,
-          email: true,
-          address: true,
-          created_at: true,
-        },
+        include: {
+          visits: {
+            orderBy: { visit_date: "desc" },
+            take: 1,
+            select: { visit_date: true }
+          }
+        }
       }),
       prisma.patient.count(),
     ]);
@@ -101,9 +108,7 @@ router.get(
   }),
 );
 
-// ─── GET /api/patient/search/:q — Search patients ────────────────────────────
-// IMPORTANT: This MUST be registered BEFORE /:id to avoid route conflict
-// BUG FIX: Added mode:"insensitive" to prevent case-sensitive SQL injection risk
+// ─── GET /api/patient/search/:q — Search patients (Fuzzy/Multi-field) ─────────
 router.get(
   "/search/:q",
   authorize("receptionist", "admin"),
@@ -111,8 +116,22 @@ router.get(
     const { q } = req.params as { q: string };
     if (!q || q.trim().length < 1) throw new HttpError(400, "Search query is required");
 
-    const sanitizedQ = (q as string).trim().slice(0, 100); // Limit query length
+    const sanitizedQ = q.trim().slice(0, 100);
 
+    // Fetch doctors matching query to support searching by doctor name
+    const doctors = await prisma.doctor.findMany({
+      where: {
+        OR: [
+          { first_name: { contains: sanitizedQ, mode: "insensitive" } },
+          { last_name: { contains: sanitizedQ, mode: "insensitive" } },
+        ]
+      },
+      select: { doctor_id: true }
+    });
+    const doctorIds = doctors.map(d => d.doctor_id);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sanitizedQ);
+
+    // Perform database search matching Name, Mobile, UHID, Doctor, Disease, Visit Number
     const patients = await prisma.patient.findMany({
       where: {
         OR: [
@@ -120,21 +139,31 @@ router.get(
           { last_name: { contains: sanitizedQ, mode: "insensitive" } },
           { unique_id: { contains: sanitizedQ.toUpperCase() } },
           { mobile: { contains: sanitizedQ } },
+          { alternate_mobile: { contains: sanitizedQ } },
+          { address: { contains: sanitizedQ, mode: "insensitive" } },
+          {
+            visits: {
+              some: {
+                OR: [
+                  { doctor_id: { in: doctorIds } },
+                  { symptoms: { hasSome: [sanitizedQ] } },
+                  { known_diseases: { hasSome: [sanitizedQ] } },
+                  ...(isUuid ? [{ visit_id: sanitizedQ }] : [])
+                ]
+              }
+            }
+          }
         ],
       },
       orderBy: { created_at: "desc" },
-      select: {
-        patient_id: true,
-        first_name: true,
-        last_name: true,
-        unique_id: true,
-        dob: true,
-        mobile: true,
-        gender: true,
-        address: true,
-        email: true,
+      include: {
+        visits: {
+          orderBy: { visit_date: "desc" },
+          take: 1,
+          select: { visit_date: true }
+        }
       },
-      take: 20,
+      take: 50,
     });
 
     res.status(200).json({
@@ -145,7 +174,30 @@ router.get(
   }),
 );
 
-// ─── GET /api/patient/:id — Get patient by unique_id ─────────────────────────
+// ─── POST /api/patient/:id/log-download — Log record download ──────────────────
+router.post(
+  "/:id/log-download",
+  authorize("receptionist", "admin"),
+  asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const patient = await prisma.patient.findFirst({ where: { unique_id: id } });
+    if (!patient) throw new HttpError(404, "Patient not found");
+
+    await prisma.adminLog.create({
+      data: {
+        admin_id: req.user!.sub,
+        action_type: "DOWNLOAD",
+        target_type: "PATIENT_RECORD",
+        target_id: patient.patient_id,
+        details: `Downloaded complete Medical Report PDF for Patient: ${patient.first_name} ${patient.last_name} (${patient.unique_id})`,
+      },
+    });
+
+    res.status(200).json({ success: true });
+  })
+);
+
+// ─── GET /api/patient/:id — Get patient 360 profile by unique_id ──────────────
 router.get(
   "/:id",
   authorize("receptionist", "admin"),
@@ -158,25 +210,17 @@ router.get(
       include: {
         visits: {
           orderBy: { visit_date: "desc" },
-          take: 10,
-          select: {
-            visit_id: true,
-            visit_date: true,
-            visit_type: true,
-            consultation_fee: true,
+          include: {
             doctor: {
               select: {
                 first_name: true,
                 last_name: true,
                 specialization: true,
+                department: true,
               },
             },
-            bill: {
-              select: {
-                payment_status: true,
-                total_amount: true,
-              },
-            },
+            vitals: true,
+            bill: true,
           },
         },
         patient_allergies: {
@@ -189,6 +233,17 @@ router.get(
     });
 
     if (!patient) throw new HttpError(404, "Patient not found");
+
+    // Add activity logging for record view
+    await prisma.adminLog.create({
+      data: {
+        admin_id: req.user!.sub,
+        action_type: "VIEW",
+        target_type: "PATIENT_PROFILE",
+        target_id: patient.patient_id,
+        details: `Accessed patient 360 profile: ${patient.first_name} ${patient.last_name} (${patient.unique_id})`,
+      },
+    });
 
     res.status(200).json({
       success: true,
@@ -208,7 +263,17 @@ router.patch(
     const patient = await prisma.patient.findFirst({ where: { unique_id: id } });
     if (!patient) throw new HttpError(404, "Patient not found");
 
-    const allowedUpdates = ["first_name", "last_name", "email", "address", "alternate_mobile", "mobile"];
+    const allowedUpdates = [
+      "first_name",
+      "last_name",
+      "email",
+      "address",
+      "alternate_mobile",
+      "mobile",
+      "blood_group",
+      "emergency_contact",
+      "insurance_details"
+    ];
     const updateData: Record<string, unknown> = {};
     for (const key of allowedUpdates) {
       if (req.body[key] !== undefined) {
@@ -219,6 +284,17 @@ router.patch(
     const updated = await prisma.patient.update({
       where: { patient_id: patient.patient_id },
       data: updateData,
+    });
+
+    // Create Audit Log
+    await prisma.adminLog.create({
+      data: {
+        admin_id: req.user!.sub,
+        action_type: "UPDATE",
+        target_type: "PATIENT",
+        target_id: updated.patient_id,
+        details: `Updated info for Patient: ${updated.first_name} ${updated.last_name} (${updated.unique_id})`,
+      },
     });
 
     res.json({ success: true, data: updated });
