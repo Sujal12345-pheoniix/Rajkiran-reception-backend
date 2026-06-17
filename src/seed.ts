@@ -136,7 +136,7 @@ async function main() {
         email: doc.email,
         consultation_fee: doc.fee,
         status: "active",
-        department_id: deptMap[doc.dept],
+        department_id: deptMap[doc.dept]!,
         created_by: admin.user_id,
       },
     });

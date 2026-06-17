@@ -1,0 +1,828 @@
+{
+  "patients": [
+    {
+      "patient_id": "f63f2b58-5e8a-4b33-8dc6-1a010e5467ec",
+      "unique_id": "PT26065F0U",
+      "first_name": "Sujal",
+      "last_name": "Kumar",
+      "dob": "2005-08-01T00:00:00.000Z",
+      "gender": "Male",
+      "mobile": "6207210784",
+      "email": "sujalreal983@gmail.com",
+      "address": "St. Andrews Institute of Technology and Management , Haryana 122506",
+      "alternate_mobile": null,
+      "blood_group": null,
+      "emergency_contact": null,
+      "insurance_details": null,
+      "created_at": "2026-06-14T04:18:47.894Z",
+      "updated_at": "2026-06-14T04:18:47.894Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "patient_id": "434bd368-539e-4453-8b11-a8b23197bd81",
+      "unique_id": "PT2606SEI",
+      "first_name": "Kishor",
+      "last_name": "kumar",
+      "dob": "1996-05-06T00:00:00.000Z",
+      "gender": "Male",
+      "mobile": "8929384238",
+      "email": "kenjuyadav@gmail.com",
+      "address": "Gupta bhawan Dusad mahulla misri tola ramgarh cant",
+      "alternate_mobile": null,
+      "blood_group": null,
+      "emergency_contact": null,
+      "insurance_details": null,
+      "created_at": "2026-06-14T05:37:21.193Z",
+      "updated_at": "2026-06-14T05:37:21.193Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "patient_id": "ba60aa02-6fed-4473-9791-5ed43c897181",
+      "unique_id": "PT2606280I",
+      "first_name": "Arman",
+      "last_name": "khan",
+      "dob": "2004-07-31T00:00:00.000Z",
+      "gender": "Male",
+      "mobile": "9897572345",
+      "email": "ak3756478@gmail.com",
+      "address": "udyog vihar  phase 1",
+      "alternate_mobile": "9999999999",
+      "blood_group": null,
+      "emergency_contact": null,
+      "insurance_details": null,
+      "created_at": "2026-06-14T17:29:44.578Z",
+      "updated_at": "2026-06-14T17:29:44.578Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "patient_id": "15fe7897-4d25-47f8-a177-53f7b78ddd54",
+      "unique_id": "PT26068P3N",
+      "first_name": "Anas",
+      "last_name": "Khan",
+      "dob": "2004-07-31T00:00:00.000Z",
+      "gender": "Male",
+      "mobile": "8126333103",
+      "email": "ak3756478@gmail.com",
+      "address": "udyog vihar  phase 1",
+      "alternate_mobile": "8888888888",
+      "blood_group": null,
+      "emergency_contact": null,
+      "insurance_details": null,
+      "created_at": "2026-06-14T17:39:12.552Z",
+      "updated_at": "2026-06-14T17:39:12.552Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "patient_id": "1be482a3-b107-4b90-a59b-c3d240e7a165",
+      "unique_id": "PT2606RAA",
+      "first_name": "testi",
+      "last_name": "kumar",
+      "dob": "2008-06-05T00:00:00.000Z",
+      "gender": "Female",
+      "mobile": "9384207439",
+      "email": "sujalreal983@gmail.com",
+      "address": "St. Andrews Institute of Technology and Management , Haryana 122506",
+      "alternate_mobile": null,
+      "blood_group": null,
+      "emergency_contact": null,
+      "insurance_details": null,
+      "created_at": "2026-06-15T03:29:05.430Z",
+      "updated_at": "2026-06-15T03:29:05.430Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "patient_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "unique_id": "PT2606CF0B",
+      "first_name": "golu",
+      "last_name": "kumar",
+      "dob": "2007-06-12T00:00:00.000Z",
+      "gender": "Male",
+      "mobile": "9348229346",
+      "email": "sujalreal983@gmail.com",
+      "address": "St. Andrews Institute of Technology and Management , Haryana 122506",
+      "alternate_mobile": null,
+      "blood_group": null,
+      "emergency_contact": null,
+      "insurance_details": null,
+      "created_at": "2026-06-15T04:31:07.898Z",
+      "updated_at": "2026-06-15T04:31:07.898Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "patient_id": "2c66de9e-0fbb-4cb2-83b5-51d2d2cbfda0",
+      "unique_id": "PT2606B4EC",
+      "first_name": "ghost",
+      "last_name": "Kumar",
+      "dob": "2014-06-02T00:00:00.000Z",
+      "gender": "Female",
+      "mobile": "6207210673",
+      "email": "sujalreal983@gmail.com",
+      "address": "St. Andrews Institute of Technology and Management , Haryana 122506",
+      "alternate_mobile": null,
+      "blood_group": null,
+      "emergency_contact": null,
+      "insurance_details": null,
+      "created_at": "2026-06-17T03:40:47.167Z",
+      "updated_at": "2026-06-17T03:40:47.167Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    }
+  ],
+  "visits": [
+    {
+      "visit_id": "a8647624-2122-4fe9-9135-1dd1ee388752",
+      "vital_id": "7f318f96-0062-44a2-a055-659753645298",
+      "bill_id": "6ad0879a-3118-4a7c-af05-d3dab7d250ec",
+      "patient_id": "f63f2b58-5e8a-4b33-8dc6-1a010e5467ec",
+      "doctor_id": "2c991b14-e0c4-4962-804f-d06db409abd5",
+      "consultation_fee": "800",
+      "visit_type": "OPD",
+      "visit_date": "2026-06-14T04:33:39.639Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "created_at": "2026-06-14T04:33:39.639Z",
+      "symptoms": [],
+      "known_diseases": [],
+      "chief_complaint": null,
+      "visit_notes": null
+    },
+    {
+      "visit_id": "aef03dcc-8f00-4457-9e31-c02bf3ae1345",
+      "vital_id": "f1d6ce1c-279d-45ec-b23a-b19ab8cb72e3",
+      "bill_id": "f1ef822e-b08f-49c8-93e0-b9aa2b25718a",
+      "patient_id": "434bd368-539e-4453-8b11-a8b23197bd81",
+      "doctor_id": "2c991b14-e0c4-4962-804f-d06db409abd5",
+      "consultation_fee": "800",
+      "visit_type": "OPD",
+      "visit_date": "2026-06-14T06:21:16.374Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "created_at": "2026-06-14T06:21:16.374Z",
+      "symptoms": [],
+      "known_diseases": [],
+      "chief_complaint": null,
+      "visit_notes": null
+    },
+    {
+      "visit_id": "5bf8e135-056a-43c4-977e-da3e7cb21ec7",
+      "vital_id": "c7c12f01-f3a8-4c25-9fbc-43ba852df1fd",
+      "bill_id": "b8c244fd-40ea-4b22-ac7a-b0c21158bebe",
+      "patient_id": "434bd368-539e-4453-8b11-a8b23197bd81",
+      "doctor_id": "2c991b14-e0c4-4962-804f-d06db409abd5",
+      "consultation_fee": "800",
+      "visit_type": "OPD",
+      "visit_date": "2026-06-14T17:33:06.545Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "created_at": "2026-06-14T17:33:06.545Z",
+      "symptoms": [],
+      "known_diseases": [],
+      "chief_complaint": null,
+      "visit_notes": null
+    },
+    {
+      "visit_id": "426e2e67-1a85-4a13-82e1-3d67f081c718",
+      "vital_id": "b42b2c63-1684-4bc5-ae60-1b6296a73706",
+      "bill_id": "5bb949d2-795d-468f-9784-272ff9eb6a1b",
+      "patient_id": "1be482a3-b107-4b90-a59b-c3d240e7a165",
+      "doctor_id": "6470d52e-4a57-403f-b7aa-dd26d28c4c13",
+      "consultation_fee": "500",
+      "visit_type": "OPD",
+      "visit_date": "2026-06-15T03:29:53.966Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "created_at": "2026-06-15T03:29:53.966Z",
+      "symptoms": [],
+      "known_diseases": [],
+      "chief_complaint": null,
+      "visit_notes": null
+    },
+    {
+      "visit_id": "b5024d84-9af2-4281-98dc-31927eab5210",
+      "vital_id": "81b5db09-bb0e-4856-90c8-e56cad7102af",
+      "bill_id": "25769385-b0a7-4278-aaec-0024453bb9cb",
+      "patient_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "doctor_id": "2c991b14-e0c4-4962-804f-d06db409abd5",
+      "consultation_fee": "800",
+      "visit_type": "OPD",
+      "visit_date": "2026-06-15T04:33:19.433Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "created_at": "2026-06-15T04:33:19.433Z",
+      "symptoms": [
+        "Fever",
+        "Cough"
+      ],
+      "known_diseases": [],
+      "chief_complaint": null,
+      "visit_notes": null
+    },
+    {
+      "visit_id": "db2e5502-b28c-41b8-98a9-f437257d64bb",
+      "vital_id": "642aeef1-80f3-48ec-8041-f2ef0611fbff",
+      "bill_id": "88dabe74-c466-4dbb-b829-d76177cacef1",
+      "patient_id": "2c66de9e-0fbb-4cb2-83b5-51d2d2cbfda0",
+      "doctor_id": "2c991b14-e0c4-4962-804f-d06db409abd5",
+      "consultation_fee": "800",
+      "visit_type": "OPD",
+      "visit_date": "2026-06-17T03:43:35.175Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "created_at": "2026-06-17T03:43:35.175Z",
+      "symptoms": [
+        "Fever"
+      ],
+      "known_diseases": [
+        "Diabetes"
+      ],
+      "chief_complaint": null,
+      "visit_notes": null
+    }
+  ],
+  "vitals": [
+    {
+      "vital_id": "7f318f96-0062-44a2-a055-659753645298",
+      "blood_pressure": "67/80",
+      "heart_rate": 71,
+      "age": 21,
+      "temperature": "99",
+      "weight": "74",
+      "height": "179.9",
+      "bmi": "22.86",
+      "bmr": null,
+      "oxygen_saturation": null,
+      "respiratory_rate": null,
+      "blood_sugar": null,
+      "pain_scale": null,
+      "recorded_at": "2026-06-14T04:33:39.038Z"
+    },
+    {
+      "vital_id": "f1d6ce1c-279d-45ec-b23a-b19ab8cb72e3",
+      "blood_pressure": "67/80",
+      "heart_rate": 73,
+      "age": 30,
+      "temperature": "99",
+      "weight": "78",
+      "height": "180",
+      "bmi": "24.07",
+      "bmr": null,
+      "oxygen_saturation": null,
+      "respiratory_rate": null,
+      "blood_sugar": null,
+      "pain_scale": null,
+      "recorded_at": "2026-06-14T06:21:15.898Z"
+    },
+    {
+      "vital_id": "c7c12f01-f3a8-4c25-9fbc-43ba852df1fd",
+      "blood_pressure": "120/80",
+      "heart_rate": 72,
+      "age": 30,
+      "temperature": "98.6",
+      "weight": "98",
+      "height": "184",
+      "bmi": "28.95",
+      "bmr": null,
+      "oxygen_saturation": null,
+      "respiratory_rate": null,
+      "blood_sugar": null,
+      "pain_scale": null,
+      "recorded_at": "2026-06-14T17:33:06.079Z"
+    },
+    {
+      "vital_id": "b42b2c63-1684-4bc5-ae60-1b6296a73706",
+      "blood_pressure": "56/80",
+      "heart_rate": 80,
+      "age": 18,
+      "temperature": "100",
+      "weight": "56",
+      "height": "150",
+      "bmi": "24.89",
+      "bmr": null,
+      "oxygen_saturation": null,
+      "respiratory_rate": null,
+      "blood_sugar": null,
+      "pain_scale": null,
+      "recorded_at": "2026-06-15T03:29:53.481Z"
+    },
+    {
+      "vital_id": "81b5db09-bb0e-4856-90c8-e56cad7102af",
+      "blood_pressure": null,
+      "heart_rate": null,
+      "age": 19,
+      "temperature": null,
+      "weight": "72",
+      "height": "191",
+      "bmi": "19.74",
+      "bmr": null,
+      "oxygen_saturation": null,
+      "respiratory_rate": null,
+      "blood_sugar": null,
+      "pain_scale": null,
+      "recorded_at": "2026-06-15T04:33:18.912Z"
+    },
+    {
+      "vital_id": "642aeef1-80f3-48ec-8041-f2ef0611fbff",
+      "blood_pressure": null,
+      "heart_rate": null,
+      "age": 12,
+      "temperature": null,
+      "weight": "78",
+      "height": "190",
+      "bmi": "21.61",
+      "bmr": null,
+      "oxygen_saturation": null,
+      "respiratory_rate": null,
+      "blood_sugar": null,
+      "pain_scale": 5,
+      "recorded_at": "2026-06-17T03:43:34.730Z"
+    }
+  ],
+  "bills": [
+    {
+      "bill_id": "6ad0879a-3118-4a7c-af05-d3dab7d250ec",
+      "consultation_fee": "800",
+      "extra_charges": "450",
+      "total_amount": "1250",
+      "registration_fee": "0",
+      "tests_fee": "0",
+      "medicines_fee": "0",
+      "tax": "0",
+      "discount": "0",
+      "grand_total": "0",
+      "payment_status": "paid\n",
+      "payment_method": "cash",
+      "bill_date": "2026-06-14T04:33:39.333Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "bill_id": "f1ef822e-b08f-49c8-93e0-b9aa2b25718a",
+      "consultation_fee": "800",
+      "extra_charges": "430",
+      "total_amount": "1230",
+      "registration_fee": "0",
+      "tests_fee": "0",
+      "medicines_fee": "0",
+      "tax": "0",
+      "discount": "0",
+      "grand_total": "0",
+      "payment_status": "paid",
+      "payment_method": "cash",
+      "bill_date": "2026-06-14T06:21:16.138Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "bill_id": "b8c244fd-40ea-4b22-ac7a-b0c21158bebe",
+      "consultation_fee": "800",
+      "extra_charges": "0",
+      "total_amount": "800",
+      "registration_fee": "0",
+      "tests_fee": "0",
+      "medicines_fee": "0",
+      "tax": "0",
+      "discount": "0",
+      "grand_total": "0",
+      "payment_status": "pending",
+      "payment_method": "cash",
+      "bill_date": "2026-06-14T17:33:06.311Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "bill_id": "5bb949d2-795d-468f-9784-272ff9eb6a1b",
+      "consultation_fee": "500",
+      "extra_charges": "340",
+      "total_amount": "840",
+      "registration_fee": "0",
+      "tests_fee": "0",
+      "medicines_fee": "0",
+      "tax": "0",
+      "discount": "0",
+      "grand_total": "0",
+      "payment_status": "pending",
+      "payment_method": "cash",
+      "bill_date": "2026-06-15T03:29:53.730Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "bill_id": "25769385-b0a7-4278-aaec-0024453bb9cb",
+      "consultation_fee": "800",
+      "extra_charges": "0",
+      "total_amount": "945",
+      "registration_fee": "100",
+      "tests_fee": "0",
+      "medicines_fee": "0",
+      "tax": "45",
+      "discount": "0",
+      "grand_total": "945",
+      "payment_status": "paid",
+      "payment_method": "cash",
+      "bill_date": "2026-06-15T04:33:19.131Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    },
+    {
+      "bill_id": "88dabe74-c466-4dbb-b829-d76177cacef1",
+      "consultation_fee": "800",
+      "extra_charges": "0",
+      "total_amount": "945",
+      "registration_fee": "100",
+      "tests_fee": "0",
+      "medicines_fee": "0",
+      "tax": "45",
+      "discount": "0",
+      "grand_total": "945",
+      "payment_status": "paid",
+      "payment_method": "upi",
+      "bill_date": "2026-06-17T03:43:34.951Z",
+      "created_by": "aebfc928-a3f5-4510-923d-16583ba2a211"
+    }
+  ],
+  "logs": [
+    {
+      "log_id": "7890db4a-7ab8-42c4-945d-ad0d4ea6496f",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "1be482a3-b107-4b90-a59b-c3d240e7a165",
+      "details": "Accessed patient 360 profile: testi kumar (PT2606RAA)",
+      "created_at": "2026-06-15T04:28:32.659Z"
+    },
+    {
+      "log_id": "83e9752b-daa8-4b3b-bc4b-8a03ac8245ef",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "CREATE",
+      "target_type": "PATIENT",
+      "target_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "details": "Registered new patient: golu kumar (PT2606CF0B)",
+      "created_at": "2026-06-15T04:31:08.133Z"
+    },
+    {
+      "log_id": "bd2ed751-70c0-481a-83dc-324e5cb3fedd",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "details": "Accessed patient 360 profile: golu kumar (PT2606CF0B)",
+      "created_at": "2026-06-15T04:31:11.756Z"
+    },
+    {
+      "log_id": "8c82929c-498f-4fa0-a7c2-bd3a749b4d5f",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "details": "Accessed patient 360 profile: golu kumar (PT2606CF0B)",
+      "created_at": "2026-06-15T04:31:14.245Z"
+    },
+    {
+      "log_id": "a5f93d3f-e058-4406-9699-a878c82f3aef",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "CREATE",
+      "target_type": "VISIT",
+      "target_id": "b5024d84-9af2-4281-98dc-31927eab5210",
+      "details": "Registered visit of type OPD for Patient ID PT2606CF0B",
+      "created_at": "2026-06-15T04:33:20.289Z"
+    },
+    {
+      "log_id": "d9703fc4-fdc7-4522-8c9e-1fe46237e567",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "f63f2b58-5e8a-4b33-8dc6-1a010e5467ec",
+      "details": "Accessed patient 360 profile: Sujal Kumar (PT26065F0U)",
+      "created_at": "2026-06-15T04:33:52.803Z"
+    },
+    {
+      "log_id": "af095319-4f62-487b-be31-40fbb20001f2",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "f63f2b58-5e8a-4b33-8dc6-1a010e5467ec",
+      "details": "Accessed patient 360 profile: Sujal Kumar (PT26065F0U)",
+      "created_at": "2026-06-15T04:33:55.626Z"
+    },
+    {
+      "log_id": "45944569-03e3-44f3-a6cb-6e83a90137c7",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "f63f2b58-5e8a-4b33-8dc6-1a010e5467ec",
+      "details": "Accessed patient 360 profile: Sujal Kumar (PT26065F0U)",
+      "created_at": "2026-06-15T04:33:55.810Z"
+    },
+    {
+      "log_id": "152d2efd-1ecb-49ac-ba90-e0e2452f8912",
+      "admin_id": "3f49e8e2-e477-45b7-8d9a-1792d78c4623",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "details": "Accessed patient 360 profile: golu kumar (PT2606CF0B)",
+      "created_at": "2026-06-15T04:35:51.633Z"
+    },
+    {
+      "log_id": "957895b5-d528-4633-8977-7a0146032bfc",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "434bd368-539e-4453-8b11-a8b23197bd81",
+      "details": "Accessed patient 360 profile: Kishor kumar (PT2606SEI)",
+      "created_at": "2026-06-15T17:05:56.993Z"
+    },
+    {
+      "log_id": "19ecedac-4b45-4250-aed4-757a541c9cb0",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "DOWNLOAD",
+      "target_type": "PATIENT_RECORD",
+      "target_id": "434bd368-539e-4453-8b11-a8b23197bd81",
+      "details": "Downloaded complete Medical Report PDF for Patient: Kishor kumar (PT2606SEI)",
+      "created_at": "2026-06-15T17:06:32.740Z"
+    },
+    {
+      "log_id": "bd3a3282-ae4c-4e8a-b946-a4f1218dd06a",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "DOWNLOAD",
+      "target_type": "PATIENT_RECORD",
+      "target_id": "434bd368-539e-4453-8b11-a8b23197bd81",
+      "details": "Downloaded complete Medical Report PDF for Patient: Kishor kumar (PT2606SEI)",
+      "created_at": "2026-06-15T17:06:33.385Z"
+    },
+    {
+      "log_id": "787eca1e-00b6-4a78-a440-c628d943de02",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "ba60aa02-6fed-4473-9791-5ed43c897181",
+      "details": "Accessed patient 360 profile: Arman khan (PT2606280I)",
+      "created_at": "2026-06-15T17:07:24.929Z"
+    },
+    {
+      "log_id": "ff9d94e8-093c-4f61-8fa0-2cfe836c1002",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "434bd368-539e-4453-8b11-a8b23197bd81",
+      "details": "Accessed patient 360 profile: Kishor kumar (PT2606SEI)",
+      "created_at": "2026-06-15T17:07:36.354Z"
+    },
+    {
+      "log_id": "5ad70dd6-3dc9-404b-a30b-0da82f1c9d71",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "15fe7897-4d25-47f8-a177-53f7b78ddd54",
+      "details": "Accessed patient 360 profile: Anas Khan (PT26068P3N)",
+      "created_at": "2026-06-15T17:09:02.764Z"
+    },
+    {
+      "log_id": "d2d43624-3afd-47db-ab49-fb0a9eb29581",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "15fe7897-4d25-47f8-a177-53f7b78ddd54",
+      "details": "Accessed patient 360 profile: Anas Khan (PT26068P3N)",
+      "created_at": "2026-06-15T17:09:24.098Z"
+    },
+    {
+      "log_id": "05a610a5-5a60-44fd-a556-051830417e9c",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "15fe7897-4d25-47f8-a177-53f7b78ddd54",
+      "details": "Accessed patient 360 profile: Anas Khan (PT26068P3N)",
+      "created_at": "2026-06-15T17:09:26.036Z"
+    },
+    {
+      "log_id": "68bebdc5-f789-4176-bec9-e3649d1bed38",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "details": "Accessed patient 360 profile: golu kumar (PT2606CF0B)",
+      "created_at": "2026-06-16T17:59:21.203Z"
+    },
+    {
+      "log_id": "a63f7b14-d99a-443f-a4fd-085af797ef72",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "DOWNLOAD",
+      "target_type": "PATIENT_RECORD",
+      "target_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "details": "Downloaded complete Medical Report PDF for Patient: golu kumar (PT2606CF0B)",
+      "created_at": "2026-06-16T17:59:59.181Z"
+    },
+    {
+      "log_id": "45788d36-d1d5-45a0-a9fa-e18a979eb3bf",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "DOWNLOAD",
+      "target_type": "PATIENT_RECORD",
+      "target_id": "744dd059-5689-47b5-83d2-d5aa69ff5753",
+      "details": "Downloaded complete Medical Report PDF for Patient: golu kumar (PT2606CF0B)",
+      "created_at": "2026-06-16T17:59:59.878Z"
+    },
+    {
+      "log_id": "c88402cb-8dd3-41dc-8d06-30360b028124",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "ba60aa02-6fed-4473-9791-5ed43c897181",
+      "details": "Accessed patient 360 profile: Arman khan (PT2606280I)",
+      "created_at": "2026-06-16T18:05:43.595Z"
+    },
+    {
+      "log_id": "9d891a46-8e8e-4cd6-b741-00afa1bd8c3d",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "ba60aa02-6fed-4473-9791-5ed43c897181",
+      "details": "Accessed patient 360 profile: Arman khan (PT2606280I)",
+      "created_at": "2026-06-17T03:38:52.672Z"
+    },
+    {
+      "log_id": "bd1cf7aa-c12b-4da5-b9f9-318c7299f692",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "DOWNLOAD",
+      "target_type": "PATIENT_RECORD",
+      "target_id": "ba60aa02-6fed-4473-9791-5ed43c897181",
+      "details": "Downloaded complete Medical Report PDF for Patient: Arman khan (PT2606280I)",
+      "created_at": "2026-06-17T03:39:17.649Z"
+    },
+    {
+      "log_id": "456a0f4f-fef1-4a28-a825-b480981d74c3",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "CREATE",
+      "target_type": "PATIENT",
+      "target_id": "2c66de9e-0fbb-4cb2-83b5-51d2d2cbfda0",
+      "details": "Registered new patient: ghost Kumar (PT2606B4EC)",
+      "created_at": "2026-06-17T03:40:47.399Z"
+    },
+    {
+      "log_id": "942fabc4-76d6-48ff-83c5-3353a21418f1",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "2c66de9e-0fbb-4cb2-83b5-51d2d2cbfda0",
+      "details": "Accessed patient 360 profile: ghost Kumar (PT2606B4EC)",
+      "created_at": "2026-06-17T03:40:50.689Z"
+    },
+    {
+      "log_id": "5e7403fa-78e7-49bb-bce5-be823c904e2e",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "2c66de9e-0fbb-4cb2-83b5-51d2d2cbfda0",
+      "details": "Accessed patient 360 profile: ghost Kumar (PT2606B4EC)",
+      "created_at": "2026-06-17T03:40:52.620Z"
+    },
+    {
+      "log_id": "6d8e5b6f-6619-4852-a9cb-45f1d6948730",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "CREATE",
+      "target_type": "VISIT",
+      "target_id": "db2e5502-b28c-41b8-98a9-f437257d64bb",
+      "details": "Registered visit of type OPD for Patient ID PT2606B4EC",
+      "created_at": "2026-06-17T03:43:36.051Z"
+    },
+    {
+      "log_id": "8af420f4-a423-435c-a564-40fe665b4c03",
+      "admin_id": "aebfc928-a3f5-4510-923d-16583ba2a211",
+      "action_type": "VIEW",
+      "target_type": "PATIENT_PROFILE",
+      "target_id": "2c66de9e-0fbb-4cb2-83b5-51d2d2cbfda0",
+      "details": "Accessed patient 360 profile: ghost Kumar (PT2606B4EC)",
+      "created_at": "2026-06-17T03:43:51.964Z"
+    }
+  ],
+  "doctors": [
+    {
+      "doctor_id": "6470d52e-4a57-403f-b7aa-dd26d28c4c13",
+      "first_name": "Aarav",
+      "last_name": "Sharma",
+      "specialization": "Pediatrician",
+      "department_id": "5a68d761-36ee-4d2c-8229-82e7adbca493",
+      "qualification": "MD Pediatrics",
+      "mobile": "9876543210",
+      "email": "dr.sharma@hospital.com",
+      "consultation_fee": "500",
+      "status": "active",
+      "joining_date": "2026-06-14T00:00:00.000Z",
+      "created_by": "3f49e8e2-e477-45b7-8d9a-1792d78c4623",
+      "created_at": "2026-06-14T04:12:50.231Z",
+      "updated_at": "2026-06-15T04:20:23.669Z"
+    },
+    {
+      "doctor_id": "2c991b14-e0c4-4962-804f-d06db409abd5",
+      "first_name": "Vikram",
+      "last_name": "Verma",
+      "specialization": "Cardiologist",
+      "department_id": "2e22a893-778d-4e8b-b149-a17e36cf90d3",
+      "qualification": "DM Cardiology",
+      "mobile": "9876543211",
+      "email": "dr.verma@hospital.com",
+      "consultation_fee": "800",
+      "status": "active",
+      "joining_date": "2026-06-14T00:00:00.000Z",
+      "created_by": "3f49e8e2-e477-45b7-8d9a-1792d78c4623",
+      "created_at": "2026-06-14T04:12:51.666Z",
+      "updated_at": "2026-06-15T04:20:23.949Z"
+    },
+    {
+      "doctor_id": "41ebcea6-99b4-4ea2-b4d1-9696c52475ba",
+      "first_name": "Ananya",
+      "last_name": "Rao",
+      "specialization": "Neurologist",
+      "department_id": "d8a5621e-0d76-46dd-8010-647789994440",
+      "qualification": "DM Neurology",
+      "mobile": "9876543212",
+      "email": "dr.rao@hospital.com",
+      "consultation_fee": "1000",
+      "status": "active",
+      "joining_date": "2026-06-15T00:00:00.000Z",
+      "created_by": "3f49e8e2-e477-45b7-8d9a-1792d78c4623",
+      "created_at": "2026-06-15T04:20:24.228Z",
+      "updated_at": "2026-06-15T04:20:24.228Z"
+    },
+    {
+      "doctor_id": "da99f855-1bec-444f-84ef-26cfb6f0214e",
+      "first_name": "Siddharth",
+      "last_name": "Patel",
+      "specialization": "Orthopedician",
+      "department_id": "68e64772-762e-4144-886f-03efeb30d8af",
+      "qualification": "MS Orthopedics",
+      "mobile": "9876543213",
+      "email": "dr.patel@hospital.com",
+      "consultation_fee": "700",
+      "status": "active",
+      "joining_date": "2026-06-15T00:00:00.000Z",
+      "created_by": "3f49e8e2-e477-45b7-8d9a-1792d78c4623",
+      "created_at": "2026-06-15T04:20:24.529Z",
+      "updated_at": "2026-06-15T04:20:24.529Z"
+    },
+    {
+      "doctor_id": "56f5f666-42e7-4ddc-a9bb-758561540228",
+      "first_name": "Pooja",
+      "last_name": "Reddy",
+      "specialization": "Gynecologist",
+      "department_id": "6f20f441-59e2-4caf-b49c-36245d7ed1bb",
+      "qualification": "MS OBGYN",
+      "mobile": "9876543214",
+      "email": "dr.reddy@hospital.com",
+      "consultation_fee": "650",
+      "status": "active",
+      "joining_date": "2026-06-15T00:00:00.000Z",
+      "created_by": "3f49e8e2-e477-45b7-8d9a-1792d78c4623",
+      "created_at": "2026-06-15T04:20:24.805Z",
+      "updated_at": "2026-06-15T04:20:24.805Z"
+    }
+  ],
+  "allergies": [
+    {
+      "allergy_id": "d6fec806-264b-4628-8cd7-3aab8eb7a84c",
+      "allergy_name": "Penicillin",
+      "category": "drug"
+    },
+    {
+      "allergy_id": "8559a231-1831-4f35-815b-b15d6ba62963",
+      "allergy_name": "Sulfonamides",
+      "category": "drug"
+    },
+    {
+      "allergy_id": "45afb8e8-5631-4ebf-a54c-71950e0411f7",
+      "allergy_name": "Peanuts",
+      "category": "food"
+    },
+    {
+      "allergy_id": "3588d94e-07f3-48c6-bf35-42c667279d3f",
+      "allergy_name": "Shellfish",
+      "category": "food"
+    },
+    {
+      "allergy_id": "6ae3cab8-1778-423a-9a77-96f9ecd7d830",
+      "allergy_name": "Latex",
+      "category": "other"
+    }
+  ],
+  "chronicConditions": [
+    {
+      "condition_id": "f2a881b0-c8be-4721-8662-da0e464104f5",
+      "condition_name": "Diabetes"
+    },
+    {
+      "condition_id": "400737b6-d4a0-4b4c-9905-8e85b3dab598",
+      "condition_name": "Hypertension"
+    },
+    {
+      "condition_id": "308a2492-5017-42c5-a7e6-123d3007d92b",
+      "condition_name": "Asthma"
+    },
+    {
+      "condition_id": "b9e89361-5179-45d6-a604-d4e36c2c5061",
+      "condition_name": "Cancer"
+    },
+    {
+      "condition_id": "34aaa04a-7c05-48f4-bcf4-4517e30295ec",
+      "condition_name": "Heart Disease"
+    },
+    {
+      "condition_id": "0a420c0a-fb7d-4872-90a1-d2eefd854946",
+      "condition_name": "Kidney Disease"
+    },
+    {
+      "condition_id": "075b179d-dce1-4fb3-8685-268f6c684175",
+      "condition_name": "Thyroid"
+    },
+    {
+      "condition_id": "6019d213-772b-409c-ae83-d0bd156c443e",
+      "condition_name": "Tuberculosis"
+    }
+  ]
+}

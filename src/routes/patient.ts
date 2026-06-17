@@ -23,9 +23,26 @@ router.post(
     // Check for duplicate mobile number
     const existing = await prisma.patient.findFirst({
       where: { mobile: patientData.mobile },
+      include: {
+        _count: {
+          select: { visits: true }
+        }
+      }
     });
     if (existing) {
-      throw new HttpError(409, `Patient with mobile ${patientData.mobile} already exists (ID: ${existing.unique_id})`);
+      res.status(409).json({
+        success: false,
+        error: "DUPLICATE_PATIENT",
+        message: `Patient with mobile ${patientData.mobile} already exists.`,
+        patient: {
+          patient_id: existing.patient_id,
+          unique_id: existing.unique_id,
+          first_name: existing.first_name,
+          last_name: existing.last_name,
+          visits_count: existing._count.visits,
+        }
+      });
+      return;
     }
 
     // Generate unique patient ID with collision check

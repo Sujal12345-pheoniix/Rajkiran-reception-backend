@@ -157,11 +157,22 @@ router.get(
     // Calculate from visit symptoms / known_diseases
     for (const v of visitsData) {
       for (const d of v.known_diseases) {
-        if (d in diseaseCounts) diseaseCounts[d]++;
+        if (d in diseaseCounts) {
+          const val = diseaseCounts[d];
+          if (val !== undefined) {
+            diseaseCounts[d] = val + 1;
+          }
+        }
       }
       for (const s of v.symptoms) {
-        if (s === "Fever") diseaseCounts["Viral Fever"]++;
-        if (s === "Breathing Difficulty") diseaseCounts["Asthma"]++;
+        if (s === "Fever") {
+          const val = diseaseCounts["Viral Fever"];
+          if (val !== undefined) diseaseCounts["Viral Fever"] = val + 1;
+        }
+        if (s === "Breathing Difficulty") {
+          const val = diseaseCounts["Asthma"];
+          if (val !== undefined) diseaseCounts["Asthma"] = val + 1;
+        }
       }
     }
     // Ensure non-zero values for display
@@ -183,22 +194,27 @@ router.get(
     for (const v of visitsData) {
       const vKey = new Date(v.visit_date).toDateString();
       if (vKey in dailyTrendsMap) {
-        dailyTrendsMap[vKey].patients++;
+        const trend = dailyTrendsMap[vKey];
+        if (trend) trend.patients++;
       }
     }
     for (const b of billsList) {
       const bKey = new Date(b.bill_date).toDateString();
       if (bKey in dailyTrendsMap) {
-        dailyTrendsMap[bKey].revenue += Number(b.total_amount);
+        const trend = dailyTrendsMap[bKey];
+        if (trend) trend.revenue += Number(b.total_amount);
       }
     }
 
     // Add fallback values to trends if all zeros
     const dailyTrends = Object.keys(dailyTrendsMap).map(key => {
       const trend = dailyTrendsMap[key];
-      if (trend.patients === 0) trend.patients = Math.floor(Math.random() * 5) + 2;
-      if (trend.revenue === 0) trend.revenue = Math.floor(Math.random() * 3000) + 1500;
-      return trend;
+      if (trend) {
+        if (trend.patients === 0) trend.patients = Math.floor(Math.random() * 5) + 2;
+        if (trend.revenue === 0) trend.revenue = Math.floor(Math.random() * 3000) + 1500;
+        return trend;
+      }
+      return { date: "", patients: 0, revenue: 0 };
     });
 
     const recentPatients = await prisma.patient.findMany({

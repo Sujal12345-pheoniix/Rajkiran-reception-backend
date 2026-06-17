@@ -23,7 +23,7 @@ export function signAccessToken(
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("15m")
+    .setExpirationTime("10h")
     .sign(ACCESS_SECRET());
 }
 
@@ -33,7 +33,7 @@ export function signRefreshToken(
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime("30d")
     .sign(REFRESH_SECRET());
 }
 
@@ -50,24 +50,23 @@ export async function verifyRefreshToken(token: string): Promise<TokenPayload> {
 // Cookie config
 const isProd = () => process.env.NODE_ENV === "production";
 
-/** Options for the access token cookie (15m).
- *  BUG FIX: Was 15 * 60 * 60 * 1000 (15 hours). Corrected to 15 * 60 * 1000 (15 minutes).
+/** Options for the access token cookie (10h).
  */
 export const accessCookieOptions: CookieOptions = {
   httpOnly: true,
   secure: isProd(),
   sameSite: "lax",
   path: "/",
-  maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
+  maxAge: 10 * 60 * 60 * 1000, // 10 hours in milliseconds
 };
 
-/** Options for the refresh token cookie (7d). */
+/** Options for the refresh token cookie (30d). */
 export const refreshCookieOptions: CookieOptions = {
   httpOnly: true,
   secure: isProd(),
   sameSite: "lax",
   path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 };
 
 /** Matching clear options — must have the same path as set options. */
