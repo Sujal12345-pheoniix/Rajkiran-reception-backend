@@ -107,11 +107,11 @@ router.get(
 
     // Bed Management
     const totalBeds = 150;
-    const occupiedBeds = Math.min(totalBeds, Math.max(30, Math.floor(totalPatients * 0.4) + todayAdmissionsCount));
+    const occupiedBeds = totalPatients === 0 ? 0 : Math.min(totalBeds, Math.floor(totalPatients * 0.4) + todayAdmissionsCount);
     const availableBeds = totalBeds - occupiedBeds;
 
     // Discharges, emergency, lab reports (operational metrics)
-    const dischargesCount = Math.max(2, Math.floor(todayAdmissionsCount * 0.6));
+    const dischargesCount = todayAdmissionsCount === 0 ? 0 : Math.floor(todayAdmissionsCount * 0.6);
     const emergencyCases = await prisma.visit.count({
       where: {
         OR: [
@@ -121,9 +121,9 @@ router.get(
         ],
         visit_date: { gte: todayStart }
       }
-    }) || 3; // Fallback to 3 if zero
+    });
 
-    const labPending = 15;
+    const labPending = 0;
 
     // 2. Department Load (real database load)
     const departmentLoad = departmentsList.map(dept => {
@@ -131,7 +131,7 @@ router.get(
       const visitCountForDept = visitsData.filter(v => v.doctor_id && docIds.includes(v.doctor_id)).length;
       return {
         department: dept.name,
-        count: visitCountForDept || Math.floor(Math.random() * 10) + 1 // Add fallback so UI isn't blank
+        count: visitCountForDept
       };
     });
 
@@ -139,7 +139,7 @@ router.get(
     const doctorWorkload = doctorsList.map(doc => {
       return {
         doctor: `Dr. ${doc.first_name} ${doc.last_name}`,
-        visits: doc.visits.length || Math.floor(Math.random() * 8) + 1 // Add fallback
+        visits: doc.visits.length
       };
     });
 
@@ -178,7 +178,7 @@ router.get(
     // Ensure non-zero values for display
     const diseaseTrends = Object.keys(diseaseCounts).map(name => ({
       disease: name,
-      cases: diseaseCounts[name] || Math.floor(Math.random() * 12) + 2
+      cases: diseaseCounts[name] || 0
     }));
 
     // 5. Patient Trends & Revenue Trends by Day (Last 7 Days)
@@ -210,8 +210,6 @@ router.get(
     const dailyTrends = Object.keys(dailyTrendsMap).map(key => {
       const trend = dailyTrendsMap[key];
       if (trend) {
-        if (trend.patients === 0) trend.patients = Math.floor(Math.random() * 5) + 2;
-        if (trend.revenue === 0) trend.revenue = Math.floor(Math.random() * 3000) + 1500;
         return trend;
       }
       return { date: "", patients: 0, revenue: 0 };
@@ -238,12 +236,12 @@ router.get(
         departmentsCount: activeDepartmentsCount,
         totalVisits: totalVisitsCount,
         totalRevenue,
-        todayPatients: todayPatientsCount || 5, // Fallback
-        todayRevenue: todayRevenue || 2840,     // Fallback
-        todayVisits: todayVisitsCount || 5,     // Fallback
-        todayAdmissions: todayAdmissionsCount || 1, // Fallback
-        todayDischarges: dischargesCount || 1,   // Fallback
-        pendingBills: pendingBillsCount || 2,    // Fallback
+        todayPatients: todayPatientsCount,
+        todayRevenue: todayRevenue,
+        todayVisits: todayVisitsCount,
+        todayAdmissions: todayAdmissionsCount,
+        todayDischarges: dischargesCount,
+        pendingBills: pendingBillsCount,
         labPending: labPending,
         emergencyCases: emergencyCases,
         beds: {
