@@ -169,4 +169,31 @@ router.delete(
   }),
 );
 
+// ─── POST /api/users/:id/reset-password — Reset user password (admin only) ─────
+router.post(
+  "/:id/reset-password",
+  validate(paramsSchema, "params"),
+  asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const { password } = req.body as { password?: string };
+
+    if (!password || password.trim().length < 6) {
+      throw new HttpError(400, "Password must be at least 6 characters long");
+    }
+
+    const exists = await prisma.user.findUnique({ where: { user_id: id } });
+    if (!exists) throw new HttpError(404, "User not found");
+
+    const { hashPassword } = await import("../lib/password.js");
+    const hashedPassword = await hashPassword(password.trim());
+
+    await prisma.user.update({
+      where: { user_id: id },
+      data: { password: hashedPassword },
+    });
+
+    res.json({ success: true, message: "User password reset successfully" });
+  }),
+);
+
 export default router;

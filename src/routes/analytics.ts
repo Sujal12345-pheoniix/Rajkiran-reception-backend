@@ -2,6 +2,7 @@ import { Router } from "express";
 import prisma from "../db/prisma.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { authenticate, authorize } from "../middleware/auth.js";
+import { HttpError } from "../middleware/errorHandler.js";
 
 const router = Router();
 
@@ -269,6 +270,117 @@ router.get(
       }))
     });
   }),
+);
+
+// ─── POST /api/analytics/backup — Export database backup ───────────────────────
+router.post(
+  "/backup",
+  asyncHandler(async (req, res) => {
+    const [patients, visits, vitals, bills, logs, doctors, departments, users] = await Promise.all([
+      prisma.patient.findMany(),
+      prisma.visit.findMany(),
+      prisma.vital.findMany(),
+      prisma.bill.findMany(),
+      prisma.adminLog.findMany(),
+      prisma.doctor.findMany(),
+      prisma.department.findMany(),
+      prisma.user.findMany({ select: { user_id: true, username: true, role: true, is_active: true } }),
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        patients,
+        visits,
+        vitals,
+        bills,
+        logs,
+        doctors,
+        departments,
+        users
+      }
+    });
+  })
+);
+
+// ─── POST /api/analytics/restore — Restore database backup ─────────────────────
+router.post(
+  "/restore",
+  asyncHandler(async (req, res) => {
+    const { data } = req.body as { data: any };
+    if (!data) throw new HttpError(400, "Backup data is required");
+
+    await prisma.$transaction(async (tx) => {
+      // Clean up in reverse relation order
+      await tx.adminLog.deleteMany();
+      await tx.visit.deleteMany();
+      await tx.bill.deleteMany();
+      await tx.vital.deleteMany();
+      await tx.patientAllergy.deleteMany();
+      await tx.patientChronicCondition.deleteMany();
+      await tx.patient.deleteMany();
+      await tx.doctor.deleteMany();
+      await tx.department.deleteMany();
+
+      // We don't delete users to avoid destroying the active session, but we can restore missing users.
+
+      if (data.departments) {
+        for (const dept of data.departments) {
+          await tx.department.upsert({
+            where: { department_id: dept.department_id },
+            update: dept,
+            create: dept
+          });
+        }
+      }
+
+      if (data.doctors) {
+        for (const doc of data.doctors) {
+          await tx.doctor.upsert({
+            where: { doctor_id: doc.doctor_id },
+            update: doc,
+            create: doc
+          });
+        }
+      }
+
+      if (data.patients) {
+        for (const p of data.patients) {
+          await tx.patient.upsert({
+            where: { patient_id: p.patient_id },
+            update: p,
+            create: p
+          });
+        }
+      }
+
+      if (data.vitals) {
+        for (const v of data.vitals) {
+          await tx.vital.create({ data: v });
+        }
+      }
+
+      if (data.bills) {
+        for (const b of data.bills) {
+          await tx.bill.create({ data: b });
+        }
+      }
+
+      if (data.visits) {
+        for (const v of data.visits) {
+          await tx.visit.create({ data: v });
+        }
+      }
+
+      if (data.logs) {
+        for (const log of data.logs) {
+          await tx.adminLog.create({ data: log });
+        }
+      }
+    });
+
+    res.json({ success: true, message: "Database restored successfully" });
+  })
 );
 
 export default router;

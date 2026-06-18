@@ -2,7 +2,7 @@
 import "dotenv/config";
 
 import { createServer } from "node:http";
-import type { Server } from "node:http";
+import { Server } from "node:http";
 import app from "../app.js";
 
 let server: Server | null = null;

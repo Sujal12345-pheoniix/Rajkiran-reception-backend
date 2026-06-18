@@ -15,6 +15,7 @@ model Department {
   created_at    DateTime @default(now()) @db.Timestamp
   updated_at    DateTime @updatedAt @db.Timestamp
   created_by    String?  @db.Uuid
+  deleted_at    DateTime? @db.Timestamp
 
   doctors Doctor[]
 
@@ -63,6 +64,7 @@ model Doctor {
   created_by       String?  @db.Uuid
   created_at       DateTime @default(now()) @db.Timestamp
   updated_at       DateTime @updatedAt @db.Timestamp
+  deleted_at       DateTime? @db.Timestamp
 
   department  Department? @relation(fields: [department_id], references: [department_id])
   visits      Visit[]
@@ -89,8 +91,10 @@ model Patient {
   blood_group      String?  @db.VarChar(10)
   emergency_contact String? @db.VarChar(100)
   insurance_details String? @db.VarChar(255)
+  chronic_conditions String[] @default([])
   created_at       DateTime @default(now()) @db.Timestamp
   updated_at       DateTime @updatedAt @db.Timestamp
+  deleted_at       DateTime? @db.Timestamp
   created_by       String   @db.Uuid
 
   // BUG FIX: Added FK relation for created_by (was orphan without it)
@@ -119,6 +123,7 @@ model Visit {
   visit_date       DateTime @default(now()) @db.Timestamp
   created_by       String   @db.Uuid
   created_at       DateTime @default(now()) @db.Timestamp
+  deleted_at       DateTime? @db.Timestamp
 
   symptoms         String[] @default([])
   known_diseases   String[] @default([])
@@ -222,6 +227,7 @@ model Bill {
   payment_method   String?  @db.VarChar(20) // cash, card, insurance
   bill_date        DateTime @default(now()) @db.Timestamp
   created_by       String?  @db.Uuid
+  deleted_at       DateTime? @db.Timestamp
 
   created_by_user User?   @relation("BillCreatedBy", fields: [created_by], references: [user_id])
   visits          Visit[]

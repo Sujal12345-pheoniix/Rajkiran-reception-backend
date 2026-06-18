@@ -12,21 +12,18 @@ const router = Router();
 router.use(authenticate);
 
 // ─── GET /api/doctor — Get all active departments with their doctors ──────────
-// BUG FIX: Was registered AFTER /:department_id so it was unreachable.
-// Now registered FIRST so Express matches it correctly.
-// BUG FIX: Also allowed admin role (was only receptionist).
 router.get(
   "/",
   authorize("receptionist", "admin"),
   asyncHandler(async (_req, res) => {
     const departments = await prisma.department.findMany({
-      where: { status: "active" },
+      where: { status: "active", deleted_at: null },
       select: {
         department_id: true,
         name: true,
         status: true,
         doctors: {
-          where: { status: "active" },
+          where: { status: "active", deleted_at: null },
           select: {
             doctor_id: true,
             first_name: true,
@@ -52,7 +49,7 @@ router.get(
     if (!departmentId) throw new HttpError(400, "Department ID is required");
 
     const doctors = await prisma.doctor.findMany({
-      where: { status: "active", department_id: departmentId },
+      where: { status: "active", department_id: departmentId, deleted_at: null },
       select: {
         doctor_id: true,
         first_name: true,
@@ -80,7 +77,7 @@ router.post(
     const doctor = req.validated as CreateDoctor;
 
     const currentDoctor = await prisma.doctor.findFirst({
-      where: { email: doctor.email },
+      where: { email: doctor.email, deleted_at: null },
     });
     if (currentDoctor) throw new HttpError(409, "A doctor with this email already exists");
 
@@ -116,7 +113,7 @@ router.patch(
     const id = req.params.id as string;
     const updates = req.body as Partial<CreateDoctor & { status: string }>;
 
-    const doctor = await prisma.doctor.findUnique({ where: { doctor_id: id } });
+    const doctor = await prisma.doctor.findFirst({ where: { doctor_id: id, deleted_at: null } });
     if (!doctor) throw new HttpError(404, "Doctor not found");
 
     const updated = await prisma.doctor.update({
@@ -127,7 +124,9 @@ router.patch(
         first_name: true,
         last_name: true,
         email: true,
+        mobile: true,
         specialization: true,
+        qualification: true,
         consultation_fee: true,
         status: true,
         department_id: true,
@@ -135,6 +134,30 @@ router.patch(
     });
 
     res.json({ success: true, data: updated });
+  }),
+);
+
+// ─── DELETE /api/doctor/:id — Delete doctor (admin only) ──────────────────────
+router.delete(
+  "/:id",
+  authorize("admin"),
+  asyncHandler(async (req, res) => {
+    const id = req.params.id as string;
+    const permanent = req.query.permanent === "true";
+
+    const doctor = await prisma.doctor.findFirst({ where: { doctor_id: id, deleted_at: null } });
+    if (!doctor) throw new HttpError(404, "Doctor not found");
+
+    if (permanent) {
+      await prisma.doctor.delete({ where: { doctor_id: id } });
+    } else {
+      await prisma.doctor.update({
+        where: { doctor_id: id },
+        data: { deleted_at: new Date(), status: "inactive" },
+      });
+    }
+
+    res.json({ success: true, message: permanent ? "Doctor permanently deleted" : "Doctor soft deleted" });
   }),
 );
 

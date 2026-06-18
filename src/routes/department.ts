@@ -15,9 +15,10 @@ router.use(authenticate);
 router.get(
   "/",
   authorize("receptionist", "admin"),
-  asyncHandler(async (_req, res) => {
+  asyncHandler(async (req, res) => {
+    const showAll = req.query.all === "true" && req.user!.role === "admin";
     const departments = await prisma.department.findMany({
-      where: { status: "active" },
+      where: showAll ? { deleted_at: null } : { status: "active", deleted_at: null },
       orderBy: { name: "asc" },
     });
     res.json({ success: true, data: departments });
@@ -32,11 +33,11 @@ router.get(
     const department_id = req.params.id as string;
     if (!department_id) throw new HttpError(400, "Department ID is required");
 
-    const department = await prisma.department.findUnique({
-      where: { department_id },
+    const department = await prisma.department.findFirst({
+      where: { department_id, deleted_at: null },
       include: {
         doctors: {
-          where: { status: "active" },
+          where: { status: "active", deleted_at: null },
           select: {
             doctor_id: true,
             first_name: true,
@@ -67,7 +68,7 @@ router.post(
       description?: string;
     };
 
-    const existing = await prisma.department.findFirst({ where: { name } });
+    const existing = await prisma.department.findFirst({ where: { name, deleted_at: null } });
     if (existing) throw new HttpError(409, "Department with this name already exists");
 
     const department = await prisma.department.create({
@@ -83,9 +84,7 @@ router.post(
   }),
 );
 
-// ─── PATCH /api/department/:id — Update department status (admin only) ───────
-// BUG FIX: Was two duplicate POST /:id routes (activate + deactivate).
-// Second route was dead code (unreachable). Now uses PATCH with explicit status.
+// ─── PATCH /api/department/:id — Update department (admin only) ──────────────
 router.patch(
   "/:id",
   authorize("admin"),
@@ -93,20 +92,48 @@ router.patch(
     const department_id = req.params.id as string;
     if (!department_id) throw new HttpError(400, "Department ID is required");
 
-    const { status } = req.body as { status?: "active" | "inactive" };
-    if (!status || !["active", "inactive"].includes(status)) {
-      throw new HttpError(400, "Status must be 'active' or 'inactive'");
-    }
+    const { name, status, description } = req.body as { name?: string; status?: "active" | "inactive"; description?: string };
 
-    const department = await prisma.department.findUnique({ where: { department_id } });
+    const department = await prisma.department.findFirst({ where: { department_id, deleted_at: null } });
     if (!department) throw new HttpError(404, "Department not found");
+
+    if (name) {
+      const existing = await prisma.department.findFirst({
+        where: { name, department_id: { not: department_id }, deleted_at: null }
+      });
+      if (existing) throw new HttpError(409, "Another department with this name already exists");
+    }
 
     const updated = await prisma.department.update({
       where: { department_id },
-      data: { status },
+      data: { name, status, description },
     });
 
     res.json({ success: true, data: updated });
+  }),
+);
+
+// ─── DELETE /api/department/:id — Delete department (admin only) ──────────────
+router.delete(
+  "/:id",
+  authorize("admin"),
+  asyncHandler(async (req, res) => {
+    const id = req.params.id as string;
+    const permanent = req.query.permanent === "true";
+
+    const department = await prisma.department.findFirst({ where: { department_id: id, deleted_at: null } });
+    if (!department) throw new HttpError(404, "Department not found");
+
+    if (permanent) {
+      await prisma.department.delete({ where: { department_id: id } });
+    } else {
+      await prisma.department.update({
+        where: { department_id: id },
+        data: { deleted_at: new Date(), status: "inactive" },
+      });
+    }
+
+    res.json({ success: true, message: permanent ? "Department permanently deleted" : "Department soft deleted" });
   }),
 );
 

@@ -21,15 +21,15 @@ router.post(
     const visitData = req.validated as CreateVisitSchema;
 
     const patient = await prisma.patient.findFirst({
-      where: { unique_id: visitData.visit.patientId },
+      where: { unique_id: visitData.visit.patientId, deleted_at: null },
     });
     if (!patient) throw new HttpError(404, "Patient not found");
 
     let doctor_id: string | null = null;
     let consultationFee = 0;
     if (visitData.visit.doctorId) {
-      const doctor = await prisma.doctor.findUnique({
-        where: { doctor_id: visitData.visit.doctorId },
+      const doctor = await prisma.doctor.findFirst({
+        where: { doctor_id: visitData.visit.doctorId, deleted_at: null },
       });
       if (!doctor) throw new HttpError(404, "Doctor not found");
       if (doctor.status !== "active") throw new HttpError(400, "Doctor is not currently active");
@@ -144,13 +144,13 @@ router.get(
   authorize("receptionist", "admin"),
   asyncHandler(async (req: Request, res: Response) => {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
+    const limit = Math.min(1000, Math.max(1, parseInt(req.query.limit as string) || 20));
     const skip = (page - 1) * limit;
 
     const dateFilter = req.query.date as string;
     const doctorId = req.query.doctor_id as string;
 
-    const whereClause: Record<string, any> = {};
+    const whereClause: Record<string, any> = { deleted_at: null };
     if (dateFilter) {
       const start = new Date(dateFilter);
       start.setHours(0, 0, 0, 0);
@@ -202,8 +202,8 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const id = req.params.id as string;
 
-    const visit = await prisma.visit.findUnique({
-      where: { visit_id: id },
+    const visit = await prisma.visit.findFirst({
+      where: { visit_id: id, deleted_at: null },
       include: {
         patient: true,
         doctor: { include: { department: true } },
@@ -215,6 +215,169 @@ router.get(
     if (!visit) throw new HttpError(404, "Visit not found");
 
     res.status(200).json({ success: true, data: visit });
+  }),
+);
+
+// ─── PATCH /api/visit/:id — Update single visit (Admin Control) ───────────────
+router.patch(
+  "/:id",
+  authorize("admin"),
+  asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const visit = await prisma.visit.findFirst({
+      where: { visit_id: id, deleted_at: null },
+    });
+    if (!visit) throw new HttpError(404, "Visit not found");
+
+    const { visit: visitData, vital: vitalData, bill: billData } = req.body;
+
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Update Vitals if provided
+      if (vitalData) {
+        let bmi: number | undefined;
+        if (vitalData.weight && vitalData.height) {
+          bmi = calculateBmi(Number(vitalData.weight), Number(vitalData.height));
+        }
+        await tx.vital.update({
+          where: { vital_id: visit.vital_id },
+          data: {
+            blood_pressure: vitalData.blood_pressure,
+            heart_rate: vitalData.heart_rate,
+            temperature: vitalData.temperature,
+            weight: vitalData.weight,
+            height: vitalData.height,
+            bmi: bmi,
+            oxygen_saturation: vitalData.oxygen_saturation,
+            respiratory_rate: vitalData.respiratory_rate,
+            blood_sugar: vitalData.blood_sugar,
+            pain_scale: vitalData.pain_scale,
+          },
+        });
+      }
+
+      // 2. Update Bill if provided
+      if (billData) {
+        const currentBill = await tx.bill.findUnique({ where: { bill_id: visit.bill_id } });
+        if (currentBill) {
+          const consultationFee = billData.consultation_fee ?? Number(currentBill.consultation_fee);
+          const registrationFee = billData.registration_fee ?? Number(currentBill.registration_fee);
+          const testsFee = billData.tests_fee ?? Number(currentBill.tests_fee);
+          const medicinesFee = billData.medicines_fee ?? Number(currentBill.medicines_fee);
+          const extraCharges = billData.extra_charge ?? Number(currentBill.extra_charges);
+          const discount = billData.discount ?? Number(currentBill.discount);
+          const tax = billData.tax ?? Number(currentBill.tax);
+
+          const grandTotal = (consultationFee + registrationFee + testsFee + medicinesFee + extraCharges) + tax - discount;
+
+          await tx.bill.update({
+            where: { bill_id: visit.bill_id },
+            data: {
+              consultation_fee: consultationFee,
+              registration_fee: registrationFee,
+              tests_fee: testsFee,
+              medicines_fee: medicinesFee,
+              extra_charges: extraCharges,
+              discount: discount,
+              tax: tax,
+              total_amount: grandTotal,
+              grand_total: grandTotal,
+              payment_status: billData.payment_status,
+              payment_method: billData.payment_method,
+            },
+          });
+        }
+      }
+
+      // 3. Update Visit
+      const updatedVisit = await tx.visit.update({
+        where: { visit_id: id },
+        data: {
+          doctor_id: visitData?.doctorId,
+          visit_type: visitData?.visit_type,
+          symptoms: visitData?.symptoms,
+          known_diseases: visitData?.known_diseases,
+          chief_complaint: visitData?.chief_complaint,
+          visit_notes: visitData?.visit_notes,
+        },
+        include: {
+          patient: true,
+          doctor: true,
+          vitals: true,
+          bill: true,
+        },
+      });
+
+      // Audit Log
+      await tx.adminLog.create({
+        data: {
+          admin_id: req.user!.sub,
+          action_type: "UPDATE",
+          target_type: "VISIT",
+          target_id: updatedVisit.visit_id,
+          details: `Updated visit info for Patient: ${updatedVisit.patient.first_name} ${updatedVisit.patient.last_name} (${updatedVisit.patient.unique_id})`,
+        },
+      });
+
+      return updatedVisit;
+    });
+
+    res.json({ success: true, data: result });
+  }),
+);
+
+// ─── DELETE /api/visit/:id — Delete visit (Admin Control) ─────────────────────
+router.delete(
+  "/:id",
+  authorize("admin"),
+  asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const permanent = req.query.permanent === "true";
+
+    const visit = await prisma.visit.findFirst({
+      where: { visit_id: id, deleted_at: null },
+    });
+    if (!visit) throw new HttpError(404, "Visit not found");
+
+    if (permanent) {
+      await prisma.$transaction([
+        prisma.visit.delete({ where: { visit_id: id } }),
+        prisma.bill.delete({ where: { bill_id: visit.bill_id } }),
+        prisma.vital.delete({ where: { vital_id: visit.vital_id } }),
+      ]);
+
+      await prisma.adminLog.create({
+        data: {
+          admin_id: req.user!.sub,
+          action_type: "DELETE_PERMANENT",
+          target_type: "VISIT",
+          target_id: id,
+          details: `Permanently deleted visit and related bill/vitals: ${id}`,
+        },
+      });
+    } else {
+      await prisma.$transaction([
+        prisma.visit.update({
+          where: { visit_id: id },
+          data: { deleted_at: new Date() },
+        }),
+        prisma.bill.update({
+          where: { bill_id: visit.bill_id },
+          data: { deleted_at: new Date() },
+        }),
+      ]);
+
+      await prisma.adminLog.create({
+        data: {
+          admin_id: req.user!.sub,
+          action_type: "DELETE_SOFT",
+          target_type: "VISIT",
+          target_id: id,
+          details: `Soft deleted visit: ${id}`,
+        },
+      });
+    }
+
+    res.json({ success: true, message: permanent ? "Visit permanently deleted" : "Visit soft deleted" });
   }),
 );
 

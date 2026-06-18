@@ -20,9 +20,9 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const patientData = req.validated as CreatePatient;
 
-    // Check for duplicate mobile number
+    // Check for duplicate mobile number (active patients only)
     const existing = await prisma.patient.findFirst({
-      where: { mobile: patientData.mobile },
+      where: { mobile: patientData.mobile, deleted_at: null },
       include: {
         _count: {
           select: { visits: true }
@@ -49,7 +49,7 @@ router.post(
     let unique_id = generatePatientId();
     let attempts = 0;
     while (attempts < 5) {
-      const idExists = await prisma.patient.findFirst({ where: { unique_id } });
+      const idExists = await prisma.patient.findFirst({ where: { unique_id, deleted_at: null } });
       if (!idExists) break;
       unique_id = generatePatientId();
       attempts++;
@@ -63,6 +63,7 @@ router.post(
         blood_group: patientData.blood_group || null,
         emergency_contact: patientData.emergency_contact || null,
         insurance_details: patientData.insurance_details || null,
+        chronic_conditions: patientData.chronic_conditions || [],
         unique_id,
         created_by: req.user!.sub, // From authenticated token, not body
       },
@@ -98,18 +99,20 @@ router.get(
 
     const [patients, total] = await Promise.all([
       prisma.patient.findMany({
+        where: { deleted_at: null },
         skip,
         take: limit,
         orderBy: { created_at: "desc" },
         include: {
           visits: {
+            where: { deleted_at: null },
             orderBy: { visit_date: "desc" },
             take: 1,
             select: { visit_date: true }
           }
         }
       }),
-      prisma.patient.count(),
+      prisma.patient.count({ where: { deleted_at: null } }),
     ]);
 
     res.status(200).json({
@@ -138,6 +141,7 @@ router.get(
     // Fetch doctors matching query to support searching by doctor name
     const doctors = await prisma.doctor.findMany({
       where: {
+        deleted_at: null,
         OR: [
           { first_name: { contains: sanitizedQ, mode: "insensitive" } },
           { last_name: { contains: sanitizedQ, mode: "insensitive" } },
@@ -151,6 +155,7 @@ router.get(
     // Perform database search matching Name, Mobile, UHID, Doctor, Disease, Visit Number
     const patients = await prisma.patient.findMany({
       where: {
+        deleted_at: null,
         OR: [
           { first_name: { contains: sanitizedQ, mode: "insensitive" } },
           { last_name: { contains: sanitizedQ, mode: "insensitive" } },
@@ -161,6 +166,7 @@ router.get(
           {
             visits: {
               some: {
+                deleted_at: null,
                 OR: [
                   { doctor_id: { in: doctorIds } },
                   { symptoms: { hasSome: [sanitizedQ] } },
@@ -175,6 +181,7 @@ router.get(
       orderBy: { created_at: "desc" },
       include: {
         visits: {
+          where: { deleted_at: null },
           orderBy: { visit_date: "desc" },
           take: 1,
           select: { visit_date: true }
@@ -197,7 +204,7 @@ router.post(
   authorize("receptionist", "admin"),
   asyncHandler(async (req: Request, res: Response) => {
     const id = req.params.id as string;
-    const patient = await prisma.patient.findFirst({ where: { unique_id: id } });
+    const patient = await prisma.patient.findFirst({ where: { unique_id: id, deleted_at: null } });
     if (!patient) throw new HttpError(404, "Patient not found");
 
     await prisma.adminLog.create({
@@ -223,9 +230,10 @@ router.get(
     if (!id) throw new HttpError(400, "Patient ID is required");
 
     const patient = await prisma.patient.findFirst({
-      where: { unique_id: id },
+      where: { unique_id: id, deleted_at: null },
       include: {
         visits: {
+          where: { deleted_at: null },
           orderBy: { visit_date: "desc" },
           include: {
             doctor: {
@@ -270,6 +278,33 @@ router.get(
   }),
 );
 
+// ─── GET /api/patient/:id/impact — Impact summary before deletion ──────────────
+router.get(
+  "/:id/impact",
+  authorize("admin"),
+  asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const patient = await prisma.patient.findFirst({
+      where: { unique_id: id, deleted_at: null },
+      include: {
+        _count: {
+          select: { visits: true }
+        }
+      }
+    });
+    if (!patient) throw new HttpError(404, "Patient not found");
+
+    res.json({
+      success: true,
+      data: {
+        visitsCount: patient._count.visits,
+        name: `${patient.first_name} ${patient.last_name}`,
+        unique_id: patient.unique_id,
+      }
+    });
+  })
+);
+
 // ─── PATCH /api/patient/:id — Update patient ─────────────────────────────────
 router.patch(
   "/:id",
@@ -277,7 +312,7 @@ router.patch(
   asyncHandler(async (req: Request, res: Response) => {
     const id = req.params.id as string;
 
-    const patient = await prisma.patient.findFirst({ where: { unique_id: id } });
+    const patient = await prisma.patient.findFirst({ where: { unique_id: id, deleted_at: null } });
     if (!patient) throw new HttpError(404, "Patient not found");
 
     const allowedUpdates = [
@@ -289,7 +324,8 @@ router.patch(
       "mobile",
       "blood_group",
       "emergency_contact",
-      "insurance_details"
+      "insurance_details",
+      "chronic_conditions"
     ];
     const updateData: Record<string, unknown> = {};
     for (const key of allowedUpdates) {
@@ -316,6 +352,71 @@ router.patch(
 
     res.json({ success: true, data: updated });
   }),
+);
+
+// ─── DELETE /api/patient/:id — Delete patient (soft or permanent) ─────────────
+router.delete(
+  "/:id",
+  authorize("admin"),
+  asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const permanent = req.query.permanent === "true";
+
+    const patient = await prisma.patient.findFirst({ where: { unique_id: id, deleted_at: null } });
+    if (!patient) throw new HttpError(404, "Patient not found");
+
+    if (permanent) {
+      // Get related visits to delete associated bills and vitals
+      const visits = await prisma.visit.findMany({
+        where: { patient_id: patient.patient_id }
+      });
+      const billIds = visits.map(v => v.bill_id);
+      const vitalIds = visits.map(v => v.vital_id);
+
+      await prisma.$transaction([
+        prisma.visit.deleteMany({ where: { patient_id: patient.patient_id } }),
+        prisma.bill.deleteMany({ where: { bill_id: { in: billIds } } }),
+        prisma.vital.deleteMany({ where: { vital_id: { in: vitalIds } } }),
+        prisma.patientAllergy.deleteMany({ where: { patient_id: patient.patient_id } }),
+        prisma.patientChronicCondition.deleteMany({ where: { patient_id: patient.patient_id } }),
+        prisma.patient.delete({ where: { patient_id: patient.patient_id } })
+      ]);
+
+      await prisma.adminLog.create({
+        data: {
+          admin_id: req.user!.sub,
+          action_type: "DELETE_PERMANENT",
+          target_type: "PATIENT",
+          target_id: patient.patient_id,
+          details: `Permanently deleted Patient record: ${patient.first_name} ${patient.last_name} (${patient.unique_id})`,
+        },
+      });
+    } else {
+      // Soft Delete Patient and their associated visits/bills
+      await prisma.$transaction([
+        prisma.patient.update({
+          where: { patient_id: patient.patient_id },
+          data: { deleted_at: new Date() }
+        }),
+        prisma.visit.updateMany({
+          where: { patient_id: patient.patient_id },
+          data: { deleted_at: new Date() }
+        })
+      ]);
+
+      await prisma.adminLog.create({
+        data: {
+          admin_id: req.user!.sub,
+          action_type: "DELETE_SOFT",
+          target_type: "PATIENT",
+          target_id: patient.patient_id,
+          details: `Soft deleted Patient: ${patient.first_name} ${patient.last_name} (${patient.unique_id})`,
+        },
+      });
+    }
+
+    res.json({ success: true, message: permanent ? "Patient permanently deleted" : "Patient soft deleted" });
+  })
 );
 
 export default router;

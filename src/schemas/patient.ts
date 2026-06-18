@@ -18,6 +18,7 @@ export const patientSchema = z.object({
   blood_group: z.string().max(10).optional().or(z.literal("")),
   emergency_contact: z.string().max(100).optional().or(z.literal("")),
   insurance_details: z.string().max(255).optional().or(z.literal("")),
+  chronic_conditions: z.array(z.string()).optional(),
 });
 
 // For creation — created_by comes from authenticated user token, not body
