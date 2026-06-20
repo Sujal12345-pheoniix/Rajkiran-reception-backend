@@ -8,6 +8,10 @@ export const visitSchema = z.object({
   known_diseases: z.array(z.string()).default([]),
   chief_complaint: z.string().optional().nullable(),
   visit_notes: z.string().optional().nullable(),
+  ipd_admission_date: z.string().optional().nullable(),
+  ipd_discharge_date: z.string().optional().nullable(),
+  ipd_stay_days: z.number().int().optional().nullable(),
+  ipd_daily_expense: z.number().optional().nullable(),
 });
 
 export const vitalSchema = z.object({

@@ -130,6 +130,11 @@ model Visit {
   chief_complaint  String?  @db.Text
   visit_notes      String?  @db.Text
 
+  ipd_admission_date DateTime? @db.Timestamp
+  ipd_discharge_date DateTime? @db.Timestamp
+  ipd_stay_days      Int?
+  ipd_daily_expense  Decimal?  @db.Decimal(10, 2)
+
   patient         Patient @relation(fields: [patient_id], references: [patient_id])
   doctor          Doctor? @relation(fields: [doctor_id], references: [doctor_id])
   created_by_user User    @relation(fields: [created_by], references: [user_id])
